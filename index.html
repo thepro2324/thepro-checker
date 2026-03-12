@@ -2,62 +2,134 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>ThePro Checker | Official Site</title>
+    <title>TERMINAL | THEPRO CHECKER</title>
     <style>
         body {
-            background-color: #050505;
-            color: #00ff41;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            overflow: hidden;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            margin: 0;
+        }
+
+        /* מטריקס ברקע */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .login-box {
+            position: relative;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #0f0;
+            padding: 40px;
+            box-shadow: 0 0 20px #0f0;
             text-align: center;
+            border-radius: 10px;
         }
-        .container {
-            border: 2px solid #00ff41;
-            padding: 50px;
-            background: rgba(0, 255, 65, 0.05);
-            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
-            border-radius: 20px;
-            max-width: 500px;
-        }
-        img {
-            width: 130px;
+
+        input {
+            background: #000;
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+            outline: none;
             margin-bottom: 20px;
-            filter: drop-shadow(0 0 10px #00ff41);
         }
-        h1 { font-size: 2.5rem; margin: 10px 0; letter-spacing: 2px; }
-        p { color: #ccc; font-size: 1.1rem; line-height: 1.6; }
-        .download-btn {
-            display: inline-block;
-            margin-top: 25px;
-            padding: 15px 40px;
-            background-color: #00ff41;
+
+        .btn {
+            background: #0f0;
             color: #000;
-            text-decoration: none;
+            padding: 10px 25px;
+            border: none;
+            cursor: pointer;
             font-weight: bold;
-            font-size: 1.4rem;
-            border-radius: 50px;
+            font-size: 1.1rem;
             transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 255, 65, 0.4);
         }
-        .download-btn:hover {
-            background-color: #fff;
-            box-shadow: 0 0 30px #fff;
-            transform: scale(1.05);
+
+        .btn:hover {
+            background: #fff;
+            box-shadow: 0 0 15px #fff;
         }
+
+        #secret-content {
+            display: none; /* מוסתר בהתחלה */
+        }
+
+        img { width: 100px; filter: drop-shadow(0 0 5px #0f0); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <img src="icon.png" alt="Logo">
-        <h1>THEPRO CHECKER v0.1</h1>
-        <p>הצ'קר החינמי והבטוח ביותר.<br>פשוט להוריד, להגדיר ולהריץ.</p>
-        
-        <a href="https://drive.google.com/uc?export=download&id=1k4ZkOtFILwUOJGy4A4_LRVRgEtZMYqKy" class="download-btn">הורד עכשיו (ZIP)</a>
-    </div>
+
+<canvas id="matrix"></canvas>
+
+<div class="login-box" id="login-form">
+    <img src="icon.png" alt="Logo"><br>
+    <h2>ACCESS RESTRICTED</h2>
+    <p>הכנס קוד גישה:</p>
+    <input type="password" id="pass-input" placeholder="****">
+    <br>
+    <button class="btn" onclick="checkPass()">ENTER</button>
+</div>
+
+<div class="login-box" id="secret-content">
+    <h1>ACCESS GRANTED</h1>
+    <p>ברוך הבא, המערכת מוכנה להורדה.</p>
+    <img src="icon.png" alt="Logo"><br><br>
+    <a href="https://drive.google.com/uc?export=download&id=1k4ZkOtFILwUOJGy4A4_LRVRgEtZMYqKy" 
+       style="text-decoration: none; color: #000; background: #0f0; padding: 15px 30px; font-weight: bold; border-radius: 5px;">
+       DOWNLOAD PACKAGE (ZIP)
+    </a>
+</div>
+
+<script>
+    // מערכת בדיקת סיסמה
+    function checkPass() {
+        const pass = document.getElementById('pass-input').value;
+        const correctPass = "1234"; // שנה כאן את הסיסמה למה שאתה רוצה!
+
+        if (pass === correctPass) {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('secret-content').style.display = 'block';
+        } else {
+            alert("ACCESS DENIED - WRONG CODE");
+        }
+    }
+
+    // קוד המטריקס ברקע
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()*&^";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function draw() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#0f0";
+        ctx.font = fontSize + "px arial";
+        for (let i = 0; i < drops.length; i++) {
+            const text = letters[Math.floor(Math.random() * letters.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        }
+    }
+    setInterval(draw, 33);
+</script>
+
 </body>
 </html>
